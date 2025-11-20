@@ -1,5 +1,6 @@
 #arquivo com as definições de classes usadas
-#TODO trocar o algoritmo de mind() e maxd() por algo mais eficiente
+
+#TODO trocar o algoritmo de mind() e maxd() por algo mais eficiente no caso de dígrafos
 
 class Grafo:
     n_arestas = 0
@@ -49,6 +50,22 @@ class Grafo:
                     if (aresta[0] == v) or (aresta[0] == u):
                         return aresta[1]
         return -1
+
+    def mind(self): #retorna o menor grau do grafo
+        menor_grau = 100000000
+        for ind_vertice in range(1, self.n_vertices + 1):
+            grau = self.d(ind_vertice)
+            if grau < menor_grau:
+                menor_grau = grau
+        return menor_grau
+
+    def maxd(self): #retorna o maior grau do grafo
+        maior_grau = 0
+        for ind_vertice in range(1, self.n_vertices + 1):
+            grau = self.d(ind_vertice)
+            if grau > maior_grau:
+                maior_grau = grau
+        return maior_grau
 
 class Digrafo:
     n_arestas = 0
