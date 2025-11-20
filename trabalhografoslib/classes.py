@@ -1,13 +1,13 @@
-#arquivo com as definições de classes usadas
-
 #TODO trocar o algoritmo de mind() e maxd() por algo mais eficiente no caso de dígrafos
+#a complexididade deles tá lá pro O(m*n) eu acho, o que é estupidamente alto pra esse dataset
+
+from collections import deque
 
 class Grafo: #(grafo simples)
     n_arestas = 0
     n_vertices = 0
     lista_adj = [] #organizado como: lista_adj[origem] = [[destino, peso], [destino, peso], ...]
     # com a lista começando no índice 1
-    distancias = [] #lista de distâncias dos vértices até a origem da última busca
 
     def __init__(self, nome_arquivo): #inicializado com o nome do arquivo que contem o digrafo
         arquivo = open(nome_arquivo, "r")
@@ -27,7 +27,6 @@ class Grafo: #(grafo simples)
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
                 self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
-                self.distancias = [100000000 for _ in range(self.n_vertices + 1)]
 
     def n(self): #retorna número de vértices
         return self.n_vertices
@@ -69,12 +68,60 @@ class Grafo: #(grafo simples)
                 maior_grau = grau
         return maior_grau
 
+    def bfs(self, v_inicial):
+        d = [100000000 for _ in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
+        pi = [-1 for _ in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for _ in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
+        queue = deque() #fila usada para explorar o grafo
+
+        queue.append(v_inicial)
+        visitados[v_inicial] = True
+        d[v_inicial] = 0
+        pi[v_inicial] = -1
+
+        while len(queue) != 0:
+            v_atual = queue[0]
+            queue.popleft()
+            for aresta in self.lista_adj[v_atual]:
+                if visitados[aresta[0]] == False:
+                    visitados[aresta[0]] = True
+                    queue.append(aresta[0])
+                    d[aresta[0]] = d[v_atual] + aresta[1]
+                    pi[aresta[0]] = v_atual
+
+        return d, pi
+
+    def dfs(self, v_inicial): #dfs feito com função recursiva
+        #LEMBRAR DE FAZER ISSO EM AMBAS CLASSES
+        vini = [100000000 for _ in range(self.n_vertices + 1)]
+        vfim = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for _ in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
+
+        tempo = 0
+        def recursivo(v_atual, v_anterior):
+            nonlocal tempo
+            tempo = tempo + 1
+            visitados[v_atual] = True
+            pi[v_atual] = v_anterior
+            vini[v_atual] = tempo
+            for aresta in self.lista_adj[v_atual]:
+                if visitados[aresta[0]] == False:
+                    recursivo(aresta[0], v_atual)
+                    tempo = tempo + 1
+                vfim[v_atual] = tempo
+
+        recursivo(v_inicial, -1)
+
+        return pi, vini, vfim
+
+#===========================================================================================================
+
 class Digrafo:
     n_arestas = 0
     n_vertices = 0
     lista_adj = [] #organizado como: lista_adj[origem] = [[destino, peso], [destino, peso], ...]
     # com a lista começando no índice 1
-    distancias = [] #lista de distâncias dos vértices até a origem da última busca
 
     def __init__(self, nome_arquivo): #inicializado com o nome do arquivo que contem o digrafo
         arquivo = open(nome_arquivo, "r")
@@ -93,7 +140,6 @@ class Digrafo:
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
                 self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
-                self.distancias = [100000000 for _ in range(self.n_vertices + 1)]
 
     def n(self):#retorna número de vértices
         return self.n_vertices
@@ -146,11 +192,64 @@ class Digrafo:
                 maior_grau = grau
         return maior_grau
 
+    def bfs(self, v_inicial):
+        d = [100000000 for _ in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
+        pi = [-1 for _ in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for _ in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
+        queue = deque() #fila usada para explorar o grafo
+
+        queue.append(v_inicial)
+        visitados[v_inicial] = True
+        d[v_inicial] = 0
+        pi[v_inicial] = -1
+
+        while len(queue) != 0:
+            v_atual = queue[0]
+            queue.popleft()
+            for aresta in self.lista_adj[v_atual]:
+                if visitados[aresta[0]] == False:
+                    visitados[aresta[0]] = True
+                    queue.append(aresta[0])
+                    d[aresta[0]] = d[v_atual] + aresta[1]
+                    pi[aresta[0]] = v_atual
+
+        return d, pi
+
+    def dfs(self, v_inicial): #dfs feito com função recursiva
+        #LEMBRAR DE FAZER ISSO EM AMBAS CLASSES
+        vini = [100000000 for _ in range(self.n_vertices + 1)]
+        vfim = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for _ in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
+
+        tempo = 0
+        def recursivo(v_atual, v_anterior):
+            nonlocal tempo
+            tempo = tempo + 1
+            visitados[v_atual] = True
+            pi[v_atual] = v_anterior
+            vini[v_atual] = tempo
+            for aresta in self.lista_adj[v_atual]:
+                if visitados[aresta[0]] == False:
+                    recursivo(aresta[0], v_atual)
+                    tempo = tempo + 1
+                vfim[v_atual] = tempo
+
+        recursivo(v_inicial, -1)
+
+        return pi, vini, vfim
+
+
+
 #TESTES TEMPORÁRIOS!!!!
 nome = input("Nome do arquivo: ")
 G = Digrafo(nome)
 print(G.n())
 print(G.m())
-print(G.w(4, 3))
-print(G.viz(2))
-print(G.d(2))
+print(G.w(1, 2))
+print(G.viz(1))
+print(G.d(1))
+pi, vini, vfim = G.dfs(1)
+print(pi)
+print(vini)
+print(vfim)
