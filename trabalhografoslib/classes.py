@@ -2,11 +2,12 @@
 
 #TODO trocar o algoritmo de mind() e maxd() por algo mais eficiente no caso de dígrafos
 
-class Grafo:
+class Grafo: #(grafo simples)
     n_arestas = 0
     n_vertices = 0
     lista_adj = [] #organizado como: lista_adj[origem] = [[destino, peso], [destino, peso], ...]
-    #com a lista começando no índice 1
+    # com a lista começando no índice 1
+    distancias = [] #lista de distâncias dos vértices até a origem da última busca
 
     def __init__(self, nome_arquivo): #inicializado com o nome do arquivo que contem o digrafo
         arquivo = open(nome_arquivo, "r")
@@ -26,6 +27,7 @@ class Grafo:
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
                 self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
+                self.distancias = [100000000 for _ in range(self.n_vertices + 1)]
 
     def n(self): #retorna número de vértices
         return self.n_vertices
@@ -72,6 +74,7 @@ class Digrafo:
     n_vertices = 0
     lista_adj = [] #organizado como: lista_adj[origem] = [[destino, peso], [destino, peso], ...]
     # com a lista começando no índice 1
+    distancias = [] #lista de distâncias dos vértices até a origem da última busca
 
     def __init__(self, nome_arquivo): #inicializado com o nome do arquivo que contem o digrafo
         arquivo = open(nome_arquivo, "r")
@@ -90,6 +93,7 @@ class Digrafo:
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
                 self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
+                self.distancias = [100000000 for _ in range(self.n_vertices + 1)]
 
     def n(self):#retorna número de vértices
         return self.n_vertices
@@ -150,4 +154,3 @@ print(G.m())
 print(G.w(4, 3))
 print(G.viz(2))
 print(G.d(2))
-print(G.maxd())
