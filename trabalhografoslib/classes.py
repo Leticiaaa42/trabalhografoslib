@@ -1,6 +1,3 @@
-#TODO trocar o algoritmo de mind() e maxd() por algo mais eficiente no caso de dígrafos
-#a complexididade deles tá lá pro O(m*n) eu acho, o que é estupidamente alto pra esse dataset
-
 from collections import deque
 
 class Grafo: #(grafo simples)
@@ -26,7 +23,7 @@ class Grafo: #(grafo simples)
             elif tipo == 'p': #informação geral
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
-                self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
+                self.lista_adj = [[] for k in range(self.n_vertices + 1)]
 
     def n(self): #retorna número de vértices
         return self.n_vertices
@@ -40,9 +37,6 @@ class Grafo: #(grafo simples)
             neighborhood.append(aresta[0])
         return neighborhood
 
-    def d(self, v): #retorna grau de um vértice 'v'
-        return len(self.lista_adj[v])
-
     def w(self, u, v): #retorna o peso da aresta que conecta 'u' e 'v'
         #nota: a reciprocidade aqui assume que uma aresta nunca se conecta a ela mesma
         for ind_vertice in range(1, self.n_vertices + 1):
@@ -52,26 +46,41 @@ class Grafo: #(grafo simples)
                         return aresta[1]
         return -1
 
+    def obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices
+        #essa função é usada para reduzir a complexidade necessária para calcular o tamanho da lista de vizinhos de cada vértice
+        graus = [0 for k in range(self.n_vertices + 1)]
+
+        for vertice in range(1, self.n_vertices + 1):
+            graus[vertice] += len(self.lista_adj[vertice])
+
+        return graus
+
+    def d(self, v): #retorna grau de um vértice 'v'
+        graus = self.obterGraus()
+        return graus[v]
+
     def mind(self): #retorna o menor grau do grafo
+        graus = self.obterGraus()
         menor_grau = 100000000
-        for ind_vertice in range(1, self.n_vertices + 1):
-            grau = self.d(ind_vertice)
+        for vertice in range(1, self.n_vertices + 1):
+            grau = graus[vertice]
             if grau < menor_grau:
                 menor_grau = grau
         return menor_grau
 
-    def maxd(self): #retorna o maior grau do grafo
+    def maxd(self): #retorna o menor grau do grafo
+        graus = self.obterGraus()
         maior_grau = 0
-        for ind_vertice in range(1, self.n_vertices + 1):
-            grau = self.d(ind_vertice)
+        for vertice in range(1, self.n_vertices + 1):
+            grau = graus[vertice]
             if grau > maior_grau:
                 maior_grau = grau
         return maior_grau
 
     def bfs(self, v_inicial):
-        d = [100000000 for _ in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
-        pi = [-1 for _ in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
-        visitados = [False for _ in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
+        d = [100000000 for k in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
+        pi = [-1 for k in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for k in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
         queue = deque() #fila usada para explorar o grafo
 
         queue.append(v_inicial)
@@ -93,10 +102,10 @@ class Grafo: #(grafo simples)
 
     def dfs(self, v_inicial): #dfs feito com função recursiva
         #LEMBRAR DE FAZER ISSO EM AMBAS CLASSES
-        vini = [100000000 for _ in range(self.n_vertices + 1)]
-        vfim = [100000000 for _ in range(self.n_vertices + 1)]
-        pi = [-1 for _ in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
-        visitados = [False for _ in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
+        vini = [100000000 for k in range(self.n_vertices + 1)]
+        vfim = [100000000 for k in range(self.n_vertices + 1)]
+        pi = [-1 for k in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for k in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
 
         tempo = 0
         def recursivo(v_atual, v_anterior):
@@ -139,7 +148,7 @@ class Digrafo:
             elif tipo == 'p': #informação geral
                 self.n_vertices = int(linha[2])
                 self.n_arestas = int(linha[3])
-                self.lista_adj = [[] for _ in range(self.n_vertices + 1)]
+                self.lista_adj = [[] for k in range(self.n_vertices + 1)]
 
     def n(self):#retorna número de vértices
         return self.n_vertices
@@ -147,8 +156,7 @@ class Digrafo:
     def m(self):#retorna número de arestas
         return self.n_arestas
 
-    def viz(self, v): #retorna adjacências de um vértice 'v'
-        #já que isso é um dígrafo, retornamos a combinação dos vizinhos de saída e de entrada
+    def viz(self, v): #retorna adjacências de um vértice 'v' EM DUAS LISTAS, in e out
         outneighborhood = []
         for aresta in self.lista_adj[v]:
             outneighborhood.append(aresta[0])
@@ -159,11 +167,7 @@ class Digrafo:
                 if aresta[0] == v:
                     inneighbourhood.append(ind_vertice)
 
-        return set(outneighborhood + inneighbourhood)
-
-
-    def d(self, v): #retorna grau de um vértice 'v'
-        return len(self.viz(v))
+        return outneighborhood, inneighbourhood
 
     def w(self, u, v): #retorna o peso da aresta que conecta 'u' e 'v'
         for ind_vertice in range(1, self.n_vertices + 1):
@@ -173,29 +177,43 @@ class Digrafo:
                         return aresta[1]
         return -1
 
-    def mind(self): #retorna o menor grau do grafo
-        #LEMBRAR DE FAZER PRA AMBAS CLASSES
+    def obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices (in + out degree)
+        #essa função é usada para reduzir a complexidade necessária para calcular o tamanho da lista de vizinhos de cada vértice
+        graus = [0 for k in range(self.n_vertices + 1)]
+
+        for vertice in range(1, self.n_vertices + 1):
+            graus[vertice] += len(self.lista_adj[vertice])
+            for aresta in self.lista_adj[vertice]:
+                graus[aresta[0]] += 1
+
+        return graus
+
+    def d(self, v): #retorna grau de um vértice 'v' (in + out degree)
+        graus = self.obterGraus()
+        return graus[v]
+
+    def mind(self): #retorna o menor grau do grafo (in + out degree)
+        graus = self.obterGraus()
         menor_grau = 100000000
-        for ind_vertice in range(1, self.n_vertices + 1):
-            grau = self.d(ind_vertice)
+        for vertice in range(1, self.n_vertices + 1):
+            grau = graus[vertice]
             if grau < menor_grau:
                 menor_grau = grau
-                if menor_grau == 1:
-                    return menor_grau
         return menor_grau
 
-    def maxd(self): #retorna o maior grau do grafo
+    def maxd(self): #retorna o menor grau do grafo (in + out degree)
+        graus = self.obterGraus()
         maior_grau = 0
-        for ind_vertice in range(1, self.n_vertices + 1):
-            grau = self.d(ind_vertice)
+        for vertice in range(1, self.n_vertices + 1):
+            grau = graus[vertice]
             if grau > maior_grau:
                 maior_grau = grau
         return maior_grau
 
     def bfs(self, v_inicial):
-        d = [100000000 for _ in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
-        pi = [-1 for _ in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
-        visitados = [False for _ in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
+        d = [100000000 for k in range(self.n_vertices + 1)] #distancia do vértice índice i até a origem
+        pi = [-1 for k in range(self.n_vertices + 1)] #vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for k in range(self.n_vertices + 1)] #se o vértice de índice i foi visitado ou não
         queue = deque() #fila usada para explorar o grafo
 
         queue.append(v_inicial)
@@ -217,10 +235,10 @@ class Digrafo:
 
     def dfs(self, v_inicial): #dfs feito com função recursiva
         #LEMBRAR DE FAZER ISSO EM AMBAS CLASSES
-        vini = [100000000 for _ in range(self.n_vertices + 1)]
-        vfim = [100000000 for _ in range(self.n_vertices + 1)]
-        pi = [-1 for _ in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
-        visitados = [False for _ in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
+        vini = [100000000 for k in range(self.n_vertices + 1)]
+        vfim = [100000000 for k in range(self.n_vertices + 1)]
+        pi = [-1 for k in range(self.n_vertices + 1)]  # vértice anterior ao vértice de índice i no caminho para a origem
+        visitados = [False for k in range(self.n_vertices + 1)]  # se o vértice de índice i foi visitado ou não
 
         tempo = 0
         def recursivo(v_atual, v_anterior):
@@ -246,10 +264,5 @@ nome = input("Nome do arquivo: ")
 G = Digrafo(nome)
 print(G.n())
 print(G.m())
-print(G.w(1, 2))
-print(G.viz(1))
-print(G.d(1))
-pi, vini, vfim = G.dfs(1)
-print(pi)
-print(vini)
-print(vfim)
+print(G.mind())
+print(G.maxd())
