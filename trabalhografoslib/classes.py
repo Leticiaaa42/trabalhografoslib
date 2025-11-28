@@ -1,5 +1,6 @@
 from collections import deque
 import json
+import heapq
 
 class Grafo: #(grafo simples)
     n_arestas = 0
@@ -176,6 +177,64 @@ class Grafo: #(grafo simples)
 
         print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
 
+        return d, pi
+
+
+    def dijkstra(self, v_inicial):
+        # Inicialização
+        d = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]
+        visitados = [False for _ in range(self.n_vertices + 1)]
+    
+        d[v_inicial] = 0
+    
+        # Fila de prioridade: (distância, vértice)
+        heap = [(0, v_inicial)]
+    
+        while heap:
+            dist_atual, u = heapq.heappop(heap)
+        
+            # Se já visitou este vértice, pula
+            if visitados[u]:
+                continue
+            
+            visitados[u] = True
+        
+            # Relaxamento das arestas adjacentes
+            for destino, peso in self.lista_adj[u]:
+                if not visitados[destino]:
+                    nova_dist = d[u] + peso
+                    if nova_dist < d[destino]:
+                        d[destino] = nova_dist
+                        pi[destino] = u
+                        heapq.heappush(heap, (nova_dist, destino))
+    
+        # --- Criar estrutura JSON ---
+        resultado = {
+            "informacoes_gerais": {
+                "vertice_origem": v_inicial,
+                "numero_vertices": self.n_vertices,
+                "algoritmo": "Dijkstra"
+            },
+            "resultados": []
+        }
+    
+        # Adicionar resultados para cada vértice (exceto índice 0)
+        for v in range(1, self.n_vertices + 1):
+            vertice_info = {
+                "vertice": v,
+                "distancia": d[v] if d[v] != 100000000 else "infinito",
+                "predecessor": pi[v]
+            }
+            resultado["resultados"].append(vertice_info)
+    
+        # Salvar em arquivo JSON
+        nome_arquivo = f"resultado_dijkstra_{v_inicial}.json"
+        with open(nome_arquivo, "w", encoding="utf-8") as f:
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+    
+        print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
+    
         return d, pi
 #===========================================================================================================
 
@@ -361,6 +420,62 @@ class Digrafo:
         print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
 
         return d, pi
+    def dijkstra(self, v_inicial):
+        # Inicialização
+        d = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]
+        visitados = [False for _ in range(self.n_vertices + 1)]
+    
+        d[v_inicial] = 0
+    
+        # Fila de prioridade: (distância, vértice)
+        heap = [(0, v_inicial)]
+    
+        while heap:
+            dist_atual, u = heapq.heappop(heap)
+        
+            # Se já visitou este vértice, pula
+            if visitados[u]:
+                continue
+            
+            visitados[u] = True
+        
+            # Relaxamento das arestas adjacentes
+            for destino, peso in self.lista_adj[u]:
+                if not visitados[destino]:
+                    nova_dist = d[u] + peso
+                    if nova_dist < d[destino]:
+                        d[destino] = nova_dist
+                        pi[destino] = u
+                        heapq.heappush(heap, (nova_dist, destino))
+    
+        # --- Criar estrutura JSON ---
+        resultado = {
+            "informacoes_gerais": {
+                "vertice_origem": v_inicial,
+                "numero_vertices": self.n_vertices,
+                "algoritmo": "Dijkstra"
+            },
+            "resultados": []
+        }
+    
+        # Adicionar resultados para cada vértice (exceto índice 0)
+        for v in range(1, self.n_vertices + 1):
+            vertice_info = {
+                "vertice": v,
+                "distancia": d[v] if d[v] != 100000000 else "infinito",
+                "predecessor": pi[v]
+            }
+            resultado["resultados"].append(vertice_info)
+    
+        # Salvar em arquivo JSON
+        nome_arquivo = f"resultado_dijkstra_{v_inicial}.json"
+        with open(nome_arquivo, "w", encoding="utf-8") as f:
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+    
+        print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
+    
+        return d, pi    
 #TESTES TEMPORÁRIOS!!!!
 nome = input("Nome do arquivo: ")
 G = Digrafo(nome)
@@ -369,3 +484,4 @@ print(G.m())
 print(G.mind())
 print(G.maxd())
 G.bf(1)
+G.dijkstra(1)
