@@ -1,4 +1,5 @@
 from collections import deque
+import json
 
 class Grafo: #(grafo simples)
     n_arestas = 0
@@ -123,7 +124,59 @@ class Grafo: #(grafo simples)
         recursivo(v_inicial, -1)
 
         return pi, vini, vfim
+    
+    def bf(self, v_inicial):
+        # Inicialização
+        d = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]
 
+        d[v_inicial] = 0
+
+        for _ in range(self.n_vertices - 1):
+            mudou = False
+            for u in range(1, self.n_vertices + 1):
+                for destino, peso in self.lista_adj[u]:
+                    if d[u] + peso < d[destino]:
+                        d[destino] = d[u] + peso
+                        pi[destino] = u
+                        mudou = True
+            if not mudou:
+                break
+
+        # Verificar ciclo negativo
+        for u in range(1, self.n_vertices + 1):
+            for destino, peso in self.lista_adj[u]:
+                if d[u] + peso < d[destino]:
+                    print("ATENÇÃO: Ciclo negativo detectado!")
+                    return None, None
+
+        #criando json
+        resultado = {
+            "informacoes_gerais": {
+                "vertice_origem": v_inicial,
+                "numero_vertices": self.n_vertices,
+                "algoritmo": "Bellman-Ford"
+            },
+            "resultados": []
+        }
+
+        # Adicionar resultados para cada vértice (exceto índice 0)
+        for v in range(1, self.n_vertices + 1):
+            vertice_info = {
+                "vertice": v,
+                "distancia": d[v] if d[v] != 100000000 else "infinito",
+                "predecessor": pi[v]
+            }
+            resultado["resultados"].append(vertice_info)
+
+        # Salvar em arquivo JSON
+        nome_arquivo = f"resultado_bf_{v_inicial}.json"
+        with open(nome_arquivo, "w", encoding="utf-8") as f:
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+
+        print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
+
+        return d, pi
 #===========================================================================================================
 
 class Digrafo:
@@ -256,9 +309,58 @@ class Digrafo:
         recursivo(v_inicial, -1)
 
         return pi, vini, vfim
+    def bf(self, v_inicial):
+        # Inicialização
+        d = [100000000 for _ in range(self.n_vertices + 1)]
+        pi = [-1 for _ in range(self.n_vertices + 1)]
 
+        d[v_inicial] = 0
+        
+        for _ in range(self.n_vertices - 1):
+            mudou = False
+            for u in range(1, self.n_vertices + 1):
+                for destino, peso in self.lista_adj[u]:
+                    if d[u] + peso < d[destino]:
+                        d[destino] = d[u] + peso
+                        pi[destino] = u
+                        mudou = True
+            if not mudou:
+                break
 
+        # Verificar ciclo negativo
+        for u in range(1, self.n_vertices + 1):
+            for destino, peso in self.lista_adj[u]:
+                if d[u] + peso < d[destino]:
+                    print("ATENÇÃO: Ciclo negativo detectado!")
+                    return None, None
 
+        #criar json
+        resultado = {
+            "informacoes_gerais": {
+                "vertice_origem": v_inicial,
+                "numero_vertices": self.n_vertices,
+                "algoritmo": "Bellman-Ford"
+            },
+            "resultados": []
+        }
+
+        # Adicionar resultados para cada vértice (exceto índice 0)
+        for v in range(1, self.n_vertices + 1):
+            vertice_info = {
+                "vertice": v,
+                "distancia": d[v] if d[v] != 100000000 else "infinito",
+                "predecessor": pi[v]
+            }
+            resultado["resultados"].append(vertice_info)
+
+        # Salvar em arquivo JSON
+        nome_arquivo = f"resultado_bf_{v_inicial}.json"
+        with open(nome_arquivo, "w", encoding="utf-8") as f:
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+
+        print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
+
+        return d, pi
 #TESTES TEMPORÁRIOS!!!!
 nome = input("Nome do arquivo: ")
 G = Digrafo(nome)
@@ -266,3 +368,4 @@ print(G.n())
 print(G.m())
 print(G.mind())
 print(G.maxd())
+G.bf(1)
