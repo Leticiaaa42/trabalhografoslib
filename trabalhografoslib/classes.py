@@ -236,6 +236,68 @@ class Grafo: #(grafo simples)
         print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
     
         return d, pi
+    def coloracao_propria(self):
+        
+        n = self.n_vertices
+        #       Conjunto de vizinhos de cada vértice (in + out)
+        adj = [set() for _ in range(n + 1)]
+
+        for u in range(1, n + 1):
+            for v, _ in self.lista_adj[u]:
+                adj[u].add(v)          # out
+                adj[v].add(u)          # in
+
+        # Calcular graus rapidamente 
+        graus = [0] * (n + 1)
+        for v in range(1, n + 1):
+            graus[v] = len(adj[v])
+
+        vertices = list(range(1, n + 1))
+        vertices.sort(key=lambda v: graus[v], reverse=True)
+
+        cor = [None] * (n + 1)
+
+       
+        cor_atual = 1
+
+        for v in vertices:
+            if cor[v] is not None:
+                continue
+
+            cor[v] = cor_atual
+            
+            for u in vertices:
+                if cor[u] is not None:
+                    continue
+                if u not in adj[v]:
+                    conflitante = False
+                    for x in adj[u]:
+                        if cor[x] == cor_atual:
+                            conflitante = True
+                            break
+
+                    if not conflitante:
+                        cor[u] = cor_atual
+
+            cor_atual += 1
+
+        k = cor_atual - 1
+
+        resultado = {
+            "n_vertices": n,
+            "n_cores": k,
+            "cores": cor[1:]  # remove índice 0
+        }
+
+        with open("resultado_coloracao.json", "w", encoding="utf-8") as f:
+            import json
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+
+        print(f"Arquivo 'resultado_coloracao.json' criado com sucesso!")
+        print(f"Número de cores utilizadas: {k}")
+
+        return cor, k
+   
 #===========================================================================================================
 
 class Digrafo:
@@ -475,13 +537,77 @@ class Digrafo:
     
         print(f"Arquivo '{nome_arquivo}' criado com sucesso!")
     
-        return d, pi    
-#TESTES TEMPORÁRIOS!!!!
+        return d, pi 
+    def coloracao_propria(self):
+        
+        n = self.n_vertices
+        #       Conjunto de vizinhos de cada vértice (in + out)
+        adj = [set() for _ in range(n + 1)]
+
+        for u in range(1, n + 1):
+            for v, _ in self.lista_adj[u]:
+                adj[u].add(v)          # out
+                adj[v].add(u)          # in
+
+        # Calcular graus rapidamente 
+        graus = [0] * (n + 1)
+        for v in range(1, n + 1):
+            graus[v] = len(adj[v])
+
+        vertices = list(range(1, n + 1))
+        vertices.sort(key=lambda v: graus[v], reverse=True)
+
+        cor = [None] * (n + 1)
+
+       
+        cor_atual = 1
+
+        for v in vertices:
+            if cor[v] is not None:
+                continue
+
+            cor[v] = cor_atual
+            
+            for u in vertices:
+                if cor[u] is not None:
+                    continue
+                if u not in adj[v]:
+                    conflitante = False
+                    for x in adj[u]:
+                        if cor[x] == cor_atual:
+                            conflitante = True
+                            break
+
+                    if not conflitante:
+                        cor[u] = cor_atual
+
+            cor_atual += 1
+
+        k = cor_atual - 1
+
+        resultado = {
+            "n_vertices": n,
+            "n_cores": k,
+            "cores": cor[1:]  # remove índice 0
+        }
+
+        with open("resultado_coloracao.json", "w", encoding="utf-8") as f:
+            import json
+            json.dump(resultado, f, indent=2, ensure_ascii=False)
+
+        print(f"Arquivo 'resultado_coloracao.json' criado com sucesso!")
+        print(f"Número de cores utilizadas: {k}")
+
+        return cor, k
+   
+# TESTES TEMPORÁRIOS!!!!
 nome = input("Nome do arquivo: ")
 G = Digrafo(nome)
-print(G.n())
-print(G.m())
-print(G.mind())
-print(G.maxd())
+# print(G.n())
+# print(G.m())  
+# print(G.mind())
+# print(G.maxd())
 G.bf(1)
 G.dijkstra(1)
+
+G.coloracao_propria()
