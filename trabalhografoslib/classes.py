@@ -1,6 +1,9 @@
 from collections import deque
 import json
 import heapq
+import sys
+
+sys.setrecursionlimit(100000)
 
 class Grafo: #(grafo simples)
     n_arestas = 0
