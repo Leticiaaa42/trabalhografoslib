@@ -603,14 +603,3 @@ class Digrafo:
 
         return cor, k
    
-# TESTES TEMPORÁRIOS!!!!
-nome = input("Nome do arquivo: ")
-G = Digrafo(nome)
-# print(G.n())
-# print(G.m())  
-# print(G.mind())
-# print(G.maxd())
-G.bf(1)
-G.dijkstra(1)
-
-G.coloracao_propria()
