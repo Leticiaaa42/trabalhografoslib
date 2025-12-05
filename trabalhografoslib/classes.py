@@ -51,7 +51,7 @@ class Grafo: #(grafo simples)
                         return aresta[1]
         return -1
 
-    def obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices
+    def __obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices
         #essa função é usada para reduzir a complexidade necessária para calcular o tamanho da lista de vizinhos de cada vértice
         graus = [0 for k in range(self.n_vertices + 1)]
 
@@ -354,7 +354,7 @@ class Digrafo:
                         return aresta[1]
         return -1
 
-    def obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices (in + out degree)
+    def __obterGraus(self): #função interna que retorna a lista com os graus de todos os vértices (in + out degree)
         #essa função é usada para reduzir a complexidade necessária para calcular o tamanho da lista de vizinhos de cada vértice
         graus = [0 for k in range(self.n_vertices + 1)]
 
@@ -602,4 +602,4 @@ class Digrafo:
         print(f"Número de cores utilizadas: {k}")
 
         return cor, k
-   
+
