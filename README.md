@@ -58,19 +58,14 @@ na árvore de busca, a lista "v.ini" indica o tempo de início da visita a cada 
 lista "v.fim" indica o tempo de término da visita a cada vértice.
 
 ### G.bf(v): 
-Executa o algoritmo de Bellman-Ford a partir do vértice v como origem. Retorna
-duas listas com os atributos "d" e "pi". A lista "d" representa as distâncias mínimas entre
-v e cada vértice, e a lista "pi" armazena o vértice predecessor no caminho mínimo de v
-até cada vértice.
+Executa o algoritmo de Bellman-Ford a partir do vértice v como origem. Cria um arquivo de texto com o tamanho do camminho
+e uma lista para cada vértice com sua distância da origem e seu predecessor.
 
 ### G.djikstra(v): 
-Executa o algoritmo de Dijkstra a partir do vértice v como origem. Retorna
-duas listas com os atributos "d" e "pi". A lista "d" representa as distâncias mínimas entre
-v e cada vértice, e a lista "pi" armazena o vértice predecessor no caminho mínimo de v
-até cada vértice.
+Executa o algoritmo de Dijkstra a partir do vértice v como origem. Cria um arquivo de texto com o tamanho do camminho
+e uma lista para cada vértice com sua distância da origem e seu predecessor.
 
 ### G.coloracao_propria: 
 Executa uma coloração própria, buscando minimizar o número de
-cores através do algoritmo guloso ou outras heurísticas mais sofisticadas. Retorna uma
-lista "c" com as cores atribuídas a cada vértices (inteiros de 1...n) e o número de cores
-“k” obtido.
+cores através do algoritmo guloso ou outras heurísticas mais sofisticadas. Cria um arquivo de texto com o número de vértices, número de cores
+e lista com as "cores" (inteiros que os representam);
